@@ -1,153 +1,32 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="node_modules/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
-    <title>Shopping Cart!</title>
-</head>
-
-<body>
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">SHOPPING CART</a>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="view-cart" data-toggle="dropdown" role="button">Shopping Cart <i class="fa fa-shopping-cart"></i></a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
-    <div class="page-header">
-        <h1>SHOPPING CART</h1>
-    </div>
-    <div class="container">
-        <div class="shopping-cart"> </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Glass" data-price="68">
-                        <div class="pricebox">
-                            <p class="price"> $68 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/31AOX24ATKL.jpg" class="proimage">
-                        </div>
-                    </div>
+<div id='header'></div>
+<div class="page-header">
+    <h1>STORE</h1>
+</div>
+<div class="row" id="store-container"></div>
+<script id="item-template" type="text/x-handlebars-template">
+    <div class='col-md-4'>
+        <div class='card-container' data-id={{id}}>
+            <div class="card item" item data-name={{name}} data-price={{price}} data-id={{id}}>
+                <div class="pricebox">
+                    <p class="price"> ${{price}} </p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Pencils" data-price="3">
-                        <div class="pricebox">
-                            <p class="price"> $3 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/51YFEe%2BCYbL.jpg" class="proimage">
-                        </div>
-                    </div>
+                <div class="buybox">
+                    <p class="add-to-cart"> ADD TO CART </p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Kinfolk" data-price="21">
-                        <div class="pricebox">
-                            <p class="price"> $21 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/41m0VhULItL.jpg" class="proimage">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Book" data-price="25">
-                        <div class="pricebox">
-                            <p class="price"> $25 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/41uyfSEwr0L.jpg" class="proimage">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Pipe" data-price="124">
-                        <div class="pricebox">
-                            <p class="price"> $124 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/41TvbxcZpZL.jpg" class="proimage">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-container">
-                    <div class="card item" item data-name="Stool" data-price="92">
-                        <div class="pricebox">
-                            <p class="price"> $92 </p>
-                        </div>
-                        <div class="buybox">
-                            <p class="add-to-cart"> ADD TO CART </p>
-                        </div>
-                        <div class="card-inner">
-                            <img src="http://ecx.images-amazon.com/images/I/41NZO5GovmL.jpg" class="proimage">
-                        </div>
-                    </div>
+                <div class="card-inner">
+                    <img src={{image}} class="proimage">
                 </div>
             </div>
         </div>
     </div>
-    <script id="shopping-cart-template" type="text/x-handlebars-template">
-        <p class="cart-title">Items in Cart</p>
-        <div class="cart-list">
-            {{#each items}}
-            <p class="item" data-item={{name}}>{{name}} - ${{price}} ({{quantity}}) <i class="fa fa-trash remove" aria-hidden="true"></i></p>
-            {{/each}}
-        </div>
-        <p>Total: $<span class="total">{{total}}</span></p>
-        <button class="btn clear-cart">Clear Cart</button>
-    </script>
-    <script type="text/javascript" src="script.js"></script>
+</script>
+</div>
+<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
+<script type="text/javascript" src="script.js"></script>
 </body>
 
 </html>
