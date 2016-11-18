@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html>
-<div id='header'></div>
-<div class="page-header">
-    <h1>STORE</h1>
-</div>
-<div class="row" id="store-container"></div>
-<script id="item-template" type="text/x-handlebars-template">
-    <div class='col-md-4'>
-        <div class='card-container' data-id={{id}}>
-            <div class="card item" item data-name={{name}} data-price={{price}} data-id={{id}}>
-                <div class="pricebox">
-                    <p class="price"> ${{price}} </p>
-                </div>
-                <div class="buybox">
-                    <p class="add-to-cart"> ADD TO CART </p>
-                </div>
-                <div class="card-inner">
-                    <img src={{image}} class="proimage">
+<!--Header Loaded by AJAX -->
+
+<body>
+    <div id="navbar"></div>
+    <div class="page-header">
+        <h1>STORE</h1>
+    </div>
+    <div class="container">
+        <div class="row" id="store-container"></div>
+        <script id="item-template" type="text/x-handlebars-template">
+            <div class='col-md-4'>
+                <div class='card-container' data-id={{id}}>
+                    <div class="card item" item data-name={{name}} data-price={{price}} data-id={{id}}>
+                        <div class="pricebox">
+                            <p class="price"> ${{price}} </p>
+                        </div>
+                        <div class="buybox">
+                            <p class="add-to-cart"> ADD TO CART </p>
+                        </div>
+                        <div class="card-inner">
+                            <img src={{image}} class="proimage">
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </script>
     </div>
-</script>
-</div>
-<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
-<script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
-<script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="node_modules/handlebars/dist/handlebars.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
 </body>
 
 </html>

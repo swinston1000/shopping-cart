@@ -7,13 +7,16 @@ function ShoppingCartApp() {
     var CART_STORE = 'shopping_cart';
     var ITEM_STORE = 'item_store';
 
-    var getFromLocalStorage = function() {
+    function _getFromLocalStorage() {
         //if there is no cart then set it up!
         cart = JSON.parse(localStorage.getItem(CART_STORE) || '{"items": [],"total": 0}');
         store = JSON.parse(localStorage.getItem(ITEM_STORE) || '{"id":6,"items":[{"name":"Glass","price":68,"image":"http://ecx.images-amazon.com/images/I/31AOX24ATKL.jpg","id":0},{"name":"Pencils","price":3,"image":"http://ecx.images-amazon.com/images/I/51YFEe%2BCYbL.jpg","id":1},{"name":"Kinfolk","price":21,"image":"http://ecx.images-amazon.com/images/I/41m0VhULItL.jpg","id":2},{"name":"Book","price":25,"image":"http://ecx.images-amazon.com/images/I/41uyfSEwr0L.jpg","id":3},{"name":"Pipe","price":124,"image":"http://ecx.images-amazon.com/images/I/41TvbxcZpZL.jpg","id":4},{"name":"Stool","price":92,"image":"http://ecx.images-amazon.com/images/I/41NZO5GovmL.jpg","id":5}]}');
         //console.log(store);
     }
-    var _saveToLocalStorage = function() {
+
+    _getFromLocalStorage();
+
+    function _saveToLocalStorage() {
         localStorage.setItem(CART_STORE, JSON.stringify(cart));
         localStorage.setItem(ITEM_STORE, JSON.stringify(store));
     }
@@ -27,9 +30,24 @@ function ShoppingCartApp() {
             //add the html to the  container
             $("#store-container").append(newHTML);
         })
+
+        // add listener
+        $('.add-to-cart').on('click', function(e) {
+            e.stopPropagation();
+            var item = $(this).closest(".item").data();
+            //item = Object.create($(this).closest(".item").data())
+            app.addItemToCart(item);
+            $(".shopping-cart").addClass('show')
+        });
     }
 
     var renderCart = function() {
+
+        // calculate new total
+        cart.total = cart.items.reduce(function(prev, next) {
+            return prev + next.price * next.quantity
+        }, 0)
+
         $(".shopping-cart").empty()
         var source = $('#shopping-cart-template').html();
         var template = Handlebars.compile(source);
@@ -38,7 +56,7 @@ function ShoppingCartApp() {
     }
 
 
-    var addItem = function(item) {
+    var addItemToCart = function(item) {
         var matchedIndex = cart.items.findIndex(function(element) {
             return element.id === item.id;
         });
@@ -50,17 +68,12 @@ function ShoppingCartApp() {
             cart.items.push(item);
         }
 
-        //update the total
-        cart.total = cart.items.reduce(function(prev, next) {
-            return prev + next.price * next.quantity
-        }, 0)
-
-        _saveToLocalStorage();
         renderCart();
+        _saveToLocalStorage();
 
     }
 
-    var removeItem = function(btn) {
+    var removeItemFromCart = function(btn) {
         var itemID = $(btn).closest('.item').data().id;
         cart.items.forEach(function(cartitem) {
             if (itemID === cartitem.id && cartitem.quantity > 1) {
@@ -70,8 +83,9 @@ function ShoppingCartApp() {
                 cart.items.splice(cart.items.indexOf(cartitem), 1);
             }
         })
-        _saveToLocalStorage();
         renderCart();
+        _saveToLocalStorage();
+
     }
 
     var clearCart = function() {
@@ -79,68 +93,103 @@ function ShoppingCartApp() {
             items: [],
             total: 0
         };
-        _saveToLocalStorage();
         renderCart();
+        _saveToLocalStorage();
+
+    }
+
+    var addItemToStore = function(item) {
+        item.id = store.id++;
+        store.items.push(item);
+        _saveToLocalStorage();
+        renderItemRemoveForm();
+    }
+
+    var renderItemRemoveForm = function() {
+        $("#remove-item-list").empty();
+        var source = $('#remove-item-template').html();
+        var template = Handlebars.compile(source);
+        store.items.forEach(function(item) {
+            var newHTML = template(item);
+            $(newHTML).appendTo("#remove-item-list");
+        })
+    }
+
+    var removeItemFromStore = function(itemID) {
+        store.items.forEach(function(item, i) {
+            if (item.id === itemID) {
+                store.items.splice(i, 1)
+                renderItemRemoveForm()
+            }
+        });
+        //TODO: remove item from cart???
+        _saveToLocalStorage();
     }
 
     return {
         renderItems: renderItems,
         renderCart: renderCart,
-        addItem: addItem,
+        addItemToCart: addItemToCart,
         clearCart: clearCart,
-        removeItem: removeItem,
-        getFromLocalStorage: getFromLocalStorage
+        removeItemFromCart: removeItemFromCart,
+        addItemToStore: addItemToStore,
+        renderItemRemoveForm: renderItemRemoveForm,
+        removeItemFromStore: removeItemFromStore
     }
 }
 
-$('#header').load('./header.html');
-
 var app = ShoppingCartApp();
 
-//turns off shopping cart when anywhere on the window is clicked!
+/***turns off shopping cart when anywhere on the window is clicked!***/
 $(window).click(function() {
     if ($(".shopping-cart").hasClass('show')) {
         $(".shopping-cart").removeClass('show');
     }
 });
 
-$(document).ready(function() {
-
-    app.getFromLocalStorage();
-
-    var location = this.location.pathname
-    if (location.indexOf('index') != -1) {
+/***load the header and then set up the page according to location***/
+$('head').load('header.html', function() {
+    if (document.location.pathname.indexOf('admin') != -1) {
+        app.renderItemRemoveForm();
+        setupFormsAndListeners();
+    } else {
+        //for any other location render items in the store and add "Add To Cart" Listener
         app.renderItems();
-        setupAddItemListener()
-    } else if (location.indexOf('admin') != -1) {
-        //setup parsley for admin form
-        var form = $('#item-form').parsley();
     }
-    // update the cart as soon as the index page loads!
-    app.renderCart();
-    setupCartListeners()
-    highlightNavBar(location)
 });
 
-function highlightNavBar(location) {
-    var navLinks = $('nav li a').each(function(i, link) {
-        var href = $(link).attr('href');
-        if (location.indexOf(href) != -1) {
-            $(link).closest('li').addClass('active')
+function setupFormsAndListeners() {
+    // ADD IIEM FORM
+    var $form = $('#add-item-form');
+    var formValidation = $form.parsley();
+    $('#add-item').on('click', function() {
+        if (formValidation.validate()) {
+            //TODO validate it is an image
+            app.addItemToStore({
+                name: $("#item-name").val(),
+                price: $("#item-price").val(),
+                image: $("#item-image").val()
+            })
+            $('.success-info').attr('style', 'display: block;').fadeOut(5000);
+            $form.trigger('reset');
+            formValidation.reset();
         }
-    })
-}
-
-function setupAddItemListener() {
-    $('.add-to-cart').on('click', function(e) {
-        e.stopPropagation();
-        var item = $(this).closest(".item").data();
-        //item = Object.create($(this).closest(".item").data())
-        //debugger;
-        app.addItem(item);
-        $(".shopping-cart").addClass('show')
+    });
+    // REMOVE IIEM FORM
+    $('#remove-item-btn').on('click', function(e) {
+        if (confirm('Are you sure you want to remove this item?')) {
+            var item = $("#remove-item-list option:selected")[0];
+            app.removeItemFromStore($(item).data().id)
+        }
     });
 }
+
+/***load the navbar and setup the cart***/
+$('#navbar').load('navbar.html', function() {
+    app.renderCart();
+    setupCartListeners()
+    highlightNavBar(document.location.pathname)
+})
 
 function setupCartListeners() {
     $('.view-cart').on('click', function() {
@@ -153,10 +202,19 @@ function setupCartListeners() {
     });
 
     $('.shopping-cart').on('click', '.remove', function() {
-        app.removeItem(this)
+        app.removeItemFromCart(this)
     });
 
     $(".shopping-cart").click(function(event) {
         event.stopPropagation();
     });
+}
+
+function highlightNavBar(location) {
+    var navLinks = $('nav li a').each(function(i, link) {
+        var href = $(link).attr('href');
+        if (location.indexOf(href) != -1) {
+            $(link).closest('li').addClass('active')
+        }
+    })
 }
