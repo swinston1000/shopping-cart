@@ -7,11 +7,22 @@ function ShoppingCartApp() {
     var CART_STORE = 'shopping_cart';
     var ITEM_STORE = 'item_store';
 
+
+
+
     function _getFromLocalStorage() {
         //if there is no cart then set it up!
         cart = JSON.parse(localStorage.getItem(CART_STORE) || '{"items": [],"total": 0}');
-        store = JSON.parse(localStorage.getItem(ITEM_STORE) || '{"id":6,"items":[{"name":"Glass","price":68,"image":"http://ecx.images-amazon.com/images/I/31AOX24ATKL.jpg","id":0},{"name":"Pencils","price":3,"image":"http://ecx.images-amazon.com/images/I/51YFEe%2BCYbL.jpg","id":1},{"name":"Kinfolk","price":21,"image":"http://ecx.images-amazon.com/images/I/41m0VhULItL.jpg","id":2},{"name":"Book","price":25,"image":"http://ecx.images-amazon.com/images/I/41uyfSEwr0L.jpg","id":3},{"name":"Pipe","price":124,"image":"http://ecx.images-amazon.com/images/I/41TvbxcZpZL.jpg","id":4},{"name":"Stool","price":92,"image":"http://ecx.images-amazon.com/images/I/41NZO5GovmL.jpg","id":5}]}');
-        //console.log(store);
+
+        var localStore = localStorage.getItem(ITEM_STORE);
+        if (localStore) {
+            store = JSON.parse(localStore);
+        } else {
+            $.getJSON("store.json", function(json) {
+                store = json
+                _saveToLocalStorage()
+            });
+        };
     }
 
     _getFromLocalStorage();
@@ -161,6 +172,7 @@ $('head').load('header.html', function() {
 function setupFormsAndListeners() {
     // ADD IIEM FORM
     var $form = $('#add-item-form');
+    addFileTypeValidator()
     var formValidation = $form.parsley();
     $('#add-item').on('click', function() {
         if (formValidation.validate()) {
@@ -182,6 +194,16 @@ function setupFormsAndListeners() {
             app.removeItemFromStore($(item).data().id)
         }
     });
+}
+
+function addFileTypeValidator() {
+    window.Parsley
+        .addValidator('filetype', function(value, requirement) {
+            var requirements = requirement.split(",")
+            var fileExtension = value.split('.').pop();
+            return requirements.indexOf(fileExtension) != -1
+        })
+        .addMessage('en', 'filetype', 'Please only link to images!');
 }
 
 /***load the navbar and setup the cart***/
